@@ -18,14 +18,30 @@ client.on("messageCreate", (message) => {
   if (message.author.bot) return;
   if (message.channel.id !== "1118929349052219565") return;
   if (prompt && consecutiveFlag) {
-    message.reply("the prompt is " + prompt);
+    message.reply(
+      "<:wordbomb:1119094039258595369> **Quick!** type a word containing:\n\n" +
+        prompt,
+    );
     consecutiveFlag = false;
   }
   if (interpretWord(message.content.toUpperCase())) {
-    message.reply("you have solved" + " " + prompt);
+    const solvedWord = generateSolvedWord(message.content.toUpperCase());
+    if (solvedWord == message.content.toUpperCase()) {
+      message.reply(
+        ":confetti_ball: Correct! :confetti_ball: good job! \n\n lucky! this prompt was generated from " +
+          solvedWord,
+      );
+    }
+    message.reply(
+      ":confetti_ball: Correct! :confetti_ball: good job!\n\n this prompt was generated from: " +
+        solvedWord,
+    );
     generateNewPrompt();
     setTimeout(() => {
-      message.reply("your prompt is " + prompt);
+      message.reply(
+        "<:wordbomb:1119094039258595369> **Quick!** type a word containing:\n\n" +
+          prompt,
+      );
     }, 3000);
   }
 });
@@ -36,7 +52,7 @@ fs.readFile("./wordsFolder/wordprompt.txt", "utf8", (err, data) => {
     return;
   }
   promptContents = data.split(/\r?\n/);
-  prompt = promptContents[randomNumber(promptContents.length - 1)];
+  prompt = promptContents[randomNumber(2000)];
 });
 
 fs.readFile("./wordsFolder/words.txt", "utf8", (err, data) => {
@@ -47,12 +63,23 @@ fs.readFile("./wordsFolder/words.txt", "utf8", (err, data) => {
   wordContents = data.split(/\r?\n/);
 });
 
+function generateSolvedWord(message) {
+  let listOfAnswers = [];
+  for (let i = 0; i < wordContents.length; i++) {
+    if (new RegExp(prompt).test(wordContents[i])) {
+      listOfAnswers.push(wordContents[i]);
+    }
+  }
+  console.log(listOfAnswers);
+  return listOfAnswers[randomNumber(listOfAnswers.length - 1)];
+}
+
 function generateNewPrompt() {
-  prompt = promptContents[randomNumber(promptContents.length - 1)];
+  prompt = promptContents[randomNumber(4000)];
 }
 
 function randomNumber(max) {
-  return Math.floor(Math.random() * 4000) + 1; //can change to max if you want
+  return Math.floor(Math.random() * max) + 1; //can change to max if you want
 }
 
 function interpretWord(message) {
